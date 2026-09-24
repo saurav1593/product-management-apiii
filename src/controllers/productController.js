@@ -1,3 +1,7 @@
+/**
+ * @module ProductController
+ * Handles all product-related request handlers for the Product Management API.
+ */
 import * as Product from '../models/product.js';
 import { ApiError, isUuid } from '../models/product.js';
 import { catchAsync } from '../middleware/catchAsync.js';

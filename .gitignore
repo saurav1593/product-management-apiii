@@ -1,4 +1,4 @@
 node_modules/
 .env
 *.log
-CLAUDE.local.md
+CLAUDE.local.md.claude/last-stop
