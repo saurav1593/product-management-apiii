@@ -1,0 +1,42 @@
+import { execSync } from 'node:child_process';
+import path from 'node:path';
+
+export default async function (event) {
+  const { toolName, args, result } = event;
+
+  // Only trigger for Edit, Write, or MultiEdit tools
+  if (!['Edit', 'Write', 'MultiEdit'].includes(toolName)) {
+    return;
+  }
+
+  // Determine which files were affected
+  let files = [];
+  if (toolName === 'Write' || toolName === 'Edit') {
+    files = [args.file_path];
+  } else if (toolName === 'MultiEdit') {
+    // MultiEdit usually provides a list of changes or affected files in its arguments
+    // Depending on the harness implementation, we look for file paths.
+    if (args.files) files = args.files;
+  }
+
+  if (files.length === 0) return;
+
+  const extensions = new Set(['.js', '.jsx', '.ts', '.tsx', '.json', '.md']);
+  const filesToFormat = files.filter(f => extensions.has(path.extname(f)));
+
+  if (filesToFormat.length === 0) return;
+
+  try {
+    const fileList = filesToFormat.join(' ');
+    // Run npx prettier --write on the matched files
+    execSync(`npx prettier --write ${fileList}`, { stdio: 'pipe' });
+
+    return {
+      additionalContext: `Formatted ${filesToFormat.length} file(s) using Prettier.`
+    };
+  } catch (error) {
+    return {
+      additionalContext: `Prettier formatting failed: ${error.message}`
+    };
+  }
+}

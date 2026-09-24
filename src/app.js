@@ -1,3 +1,4 @@
+// Express application factory
 import express from 'express';
 import productsRouter from './routes/products.js';
 import { errorHandler } from './middleware/errorHandler.js';
